@@ -1,6 +1,8 @@
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
-import * as Font from "expo-font";
+import { useFonts } from "expo-font";
+import { AppLoading } from "expo";
+import { useCallback } from "react";
 import {
   ImageBackground,
   KeyboardAvoidingView,
@@ -11,80 +13,157 @@ import {
   View,
   Platform,
   Button,
+  Text,
+  Pressable,
+  TouchableOpacity,
 } from "react-native";
+// const customFonts = {
+//   "Roboto-Regular": require("./assets/fonts/Roboto-Regular.ttf"),
+//   "Roboto-Medium": require("./assets/fonts/Roboto-Medium.ttf"),
+// };
 const image = require("./assets/img/Photo_BG.jpg");
+
 // const loadFonts = async () => {
-//   await Font.loadAsync({
-//     "Roboto-Regular": require("./img/fonts/Roboto/Roboto-Regular.ttf"),
-//     "Roboto-Medium": require("./img/fonts/Roboto/Roboto-Medium.ttf"),
-//   });
+//   await Font.loadAsync(customFonts);
 // };
 
 export default function App() {
-  // const [isReady, setIsReady] = useState(false);
-  // if (!isReady) {
-  //   return (
-  //     <AppLoading startAsync={loadFonts} onFinish={() => setIsReady(true)} />
-  //   );
-  // }
-
+  const [isReady, setIsReady] = useState(false);
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
+  const [isFocusedUser, setFocusUser] = useState(false);
+  const [isFocusedPass, setFocusPass] = useState(false);
+  const [isFocusedEmail, setFocusEmail] = useState(false);
+  // const [fontsLoaded] = useFonts(customFonts);
+
+  // if (!fontsLoaded) {
+  //   return <AppLoading onFinish={() => setIsReady(true)} />;
+  // }
 
   const nameHandler = (text) => setName(text);
   const passwordHandler = (text) => setPassword(text);
   const emailHandler = (text) => setEmail(text);
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={styles.container}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS == "ios" ? "padding" : "height"}
+      style={styles.container}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <ImageBackground
+          style={styles.bgimage}
           source={image}
           resizeMode="cover"
-          style={{ width: 300, height: 500 }}
         >
-          <KeyboardAvoidingView
-            behavior={Platform.OS == "ios" ? "padding" : "height"}
-          >
-            <View>
+          <View style={styles.container}>
+            <View style={styles.containerForRegistration}>
+              <View style={styles.containerForInput}>
+                <Text style={styles.text}>Реєстрація</Text>
+              </View>
               <TextInput
                 value={name}
                 onChangeText={nameHandler}
                 placeholder="Username"
-                style={styles.input}
+                style={isFocusedUser ? styles.inputFocused : styles.input}
+                onFocus={() => setFocusUser(true)}
+                onBlur={() => setFocusUser(false)}
               />
               <TextInput
                 value={password}
                 onChangeText={passwordHandler}
                 placeholder="Password"
                 secureTextEntry={true}
-                style={styles.input}
+                style={isFocusedPass ? styles.inputFocused : styles.input}
+                onFocus={() => setFocusPass(true)}
+                onBlur={() => setFocusPass(false)}
               ></TextInput>
               <TextInput
                 value={email}
                 onChangeText={emailHandler}
                 placeholder="email"
-                style={styles.input}
+                style={isFocusedEmail ? styles.inputFocused : styles.input}
+                onFocus={() => setFocusEmail(true)}
+                onBlur={() => setFocusEmail(false)}
               />
-              <Button title="Зарeєструватись"></Button>
+              <TouchableOpacity activeOpacity={0.8} style={styles.regBTN}>
+                <Text style={styles.regText}>Зареєструватись</Text>
+              </TouchableOpacity>
+              <View style={styles.containerForInput}>
+                <Pressable style={styles.signBtn}>
+                  <Text style={styles.signText}>Уже є аккаунт? Увійти</Text>
+                </Pressable>
+              </View>
             </View>
-          </KeyboardAvoidingView>
+          </View>
         </ImageBackground>
-      </View>
-    </TouchableWithoutFeedback>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
     justifyContent: "center",
+    justifyContent: "flex-end",
+  },
+  containerForInput: {
+    alignItems: "center",
   },
   input: {
     backgroundColor: "#F6F6F6",
+    borderWidth: 1,
+    borderColor: "#E8E8E8",
     borderRadius: 8,
-    margin: 30,
     padding: 16,
+    marginHorizontal: 16,
+    marginBottom: 16,
+  },
+  inputFocused: {
+    backgroundColor: "#F6F6F6",
+    borderWidth: 1,
+    borderColor: "#FF6C00",
+    borderRadius: 8,
+    padding: 16,
+    marginHorizontal: 16,
+    marginBottom: 16,
+  },
+  bgimage: {
+    flex: 1,
+  },
+  containerForRegistration: {
+    flex: 0.7,
+    flexDirection: "column",
+    backgroundColor: "#FFFFFF",
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    justifyContent: "flex-end",
+  },
+  regBTN: {
+    backgroundColor: "#FF6C00",
+    marginHorizontal: 16,
+    paddingBottom: 16,
+    paddingTop: 16,
+    paddingLeft: 32,
+    paddingRight: 32,
+    alignItems: "center",
+    borderRadius: 100,
+    marginTop: 45,
+  },
+  regText: {
+    fontSize: 16,
+    color: "#FFFFFF",
+  },
+  text: {
+    fontSize: 30,
+    marginBottom: 33,
+  },
+  signBtn: {
+    marginTop: 16,
+  },
+  signText: {
+    color: "#1B4371",
   },
 });
+//TODO фіксанути/спитати за контейнер, додати кнопку показати пароль(як її засунути в інпут), додати контейнер для фотки і кнопку "плюс"
+//пересунути все написане в відьльні компоненти. А ну і шрифти і магія з фоном
