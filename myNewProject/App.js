@@ -1,8 +1,13 @@
+import React from "react";
+import { useState } from "react";
 import { StatusBar } from "expo-status-bar";
+import { AppLoading } from "expo";
 import * as Font from "expo-font";
 import {
   KeyboardAvoidingView,
   StyleSheet,
+  Keyboard,
+  Platform,
   Text,
   TouchableWithoutFeedback,
   View,
@@ -10,8 +15,8 @@ import {
 
 const loadFonts = async () => {
   await Font.loadAsync({
-    "Roboto-Regular": require("./img/fonts/Roboto/Roboto-Regular.ttf"),
-    "Roboto-Medium": require("./img/fonts/Roboto/Roboto-Medium.ttf"),
+    "Roboto-Regular": require("./assets/fonts/Roboto-Regular.ttf"),
+    "Roboto-Medium": require("./assets/fonts/Roboto-Medium.ttf"),
   });
 };
 
