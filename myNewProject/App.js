@@ -35,6 +35,7 @@ export default function App() {
   const [isFocusedUser, setFocusUser] = useState(false);
   const [isFocusedPass, setFocusPass] = useState(false);
   const [isFocusedEmail, setFocusEmail] = useState(false);
+  const [isKeyboardHere, setIsKeyboardHere] = useState(false);
   // const [fontsLoaded] = useFonts(customFonts);
 
   // if (!fontsLoaded) {
@@ -44,56 +45,83 @@ export default function App() {
   const nameHandler = (text) => setName(text);
   const passwordHandler = (text) => setPassword(text);
   const emailHandler = (text) => setEmail(text);
+
+  const KeyboardHide = () => {
+    Keyboard.dismiss();
+    setIsKeyboardHere(false);
+  };
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS == "ios" ? "padding" : "height"}
       style={styles.container}
     >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <TouchableWithoutFeedback onPress={KeyboardHide}>
         <ImageBackground
           style={styles.bgimage}
           source={image}
           resizeMode="cover"
         >
           <View style={styles.container}>
-            <View style={styles.containerForRegistration}>
-              <View style={styles.containerForInput}>
-                <Text style={styles.text}>Реєстрація</Text>
+            <TouchableWithoutFeedback onPress={KeyboardHide}>
+              <View
+                style={{
+                  ...styles.containerForRegistration,
+                  flex: isKeyboardHere ? 0.9 : 0.7,
+                }}
+              >
+                <View style={styles.containerForInput}>
+                  <Text style={styles.text}>Реєстрація</Text>
+                </View>
+                <TextInput
+                  value={name}
+                  onChangeText={nameHandler}
+                  placeholder="Username"
+                  style={isFocusedUser ? styles.inputFocused : styles.input}
+                  onFocus={() => {
+                    setFocusUser(true);
+                    setIsKeyboardHere(true);
+                  }}
+                  onBlur={() => {
+                    setFocusUser(false);
+                  }}
+                />
+                <TextInput
+                  value={password}
+                  onChangeText={passwordHandler}
+                  placeholder="Password"
+                  secureTextEntry={true}
+                  style={isFocusedPass ? styles.inputFocused : styles.input}
+                  onFocus={() => {
+                    setFocusPass(true);
+                    setIsKeyboardHere(true);
+                  }}
+                  onBlur={() => {
+                    setFocusPass(false);
+                  }}
+                ></TextInput>
+                <TextInput
+                  value={email}
+                  onChangeText={emailHandler}
+                  placeholder="email"
+                  style={isFocusedEmail ? styles.inputFocused : styles.input}
+                  onFocus={() => {
+                    setFocusEmail(true);
+                    setIsKeyboardHere(true);
+                  }}
+                  onBlur={() => {
+                    setFocusEmail(false);
+                  }}
+                />
+                <TouchableOpacity activeOpacity={0.8} style={styles.regBTN}>
+                  <Text style={styles.regText}>Зареєструватись</Text>
+                </TouchableOpacity>
+                <View style={styles.containerForInput}>
+                  <Pressable style={styles.signBtn}>
+                    <Text style={styles.signText}>Уже є аккаунт? Увійти</Text>
+                  </Pressable>
+                </View>
               </View>
-              <TextInput
-                value={name}
-                onChangeText={nameHandler}
-                placeholder="Username"
-                style={isFocusedUser ? styles.inputFocused : styles.input}
-                onFocus={() => setFocusUser(true)}
-                onBlur={() => setFocusUser(false)}
-              />
-              <TextInput
-                value={password}
-                onChangeText={passwordHandler}
-                placeholder="Password"
-                secureTextEntry={true}
-                style={isFocusedPass ? styles.inputFocused : styles.input}
-                onFocus={() => setFocusPass(true)}
-                onBlur={() => setFocusPass(false)}
-              ></TextInput>
-              <TextInput
-                value={email}
-                onChangeText={emailHandler}
-                placeholder="email"
-                style={isFocusedEmail ? styles.inputFocused : styles.input}
-                onFocus={() => setFocusEmail(true)}
-                onBlur={() => setFocusEmail(false)}
-              />
-              <TouchableOpacity activeOpacity={0.8} style={styles.regBTN}>
-                <Text style={styles.regText}>Зареєструватись</Text>
-              </TouchableOpacity>
-              <View style={styles.containerForInput}>
-                <Pressable style={styles.signBtn}>
-                  <Text style={styles.signText}>Уже є аккаунт? Увійти</Text>
-                </Pressable>
-              </View>
-            </View>
+            </TouchableWithoutFeedback>
           </View>
         </ImageBackground>
       </TouchableWithoutFeedback>
@@ -132,7 +160,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   containerForRegistration: {
-    flex: 0.7,
     flexDirection: "column",
     backgroundColor: "#FFFFFF",
     borderTopLeftRadius: 25,
@@ -165,5 +192,5 @@ const styles = StyleSheet.create({
     color: "#1B4371",
   },
 });
-//TODO фіксанути/спитати за контейнер, додати кнопку показати пароль(як її засунути в інпут), додати контейнер для фотки і кнопку "плюс"
+//TODO  додати кнопку показати пароль(як її засунути в інпут), додати контейнер для фотки і кнопку "плюс"
 //пересунути все написане в відьльні компоненти. А ну і шрифти і магія з фоном
