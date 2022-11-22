@@ -4,8 +4,10 @@ import {
   Roboto_500Medium,
 } from "@expo-google-fonts/roboto";
 import AppLoading from "expo-app-loading";
-import LoginScreen from "./src/components/login";
-import RegistrationScreen from "./src/components/registration";
+// import LoginScreen from "./src/components/screens/auth/login";
+// import RegistrationScreen from "./src/components/screens/auth/registration";
+import { NavigationContainer } from "@react-navigation/native";
+import { useRoute } from "./router";
 
 export default function App() {
   let [fontsLoaded] = useFonts({
@@ -13,14 +15,16 @@ export default function App() {
     Roboto_500Medium,
   });
 
+  const routing = useRoute(true);
+
   if (!fontsLoaded) {
     return <AppLoading />;
   }
 
-  return (
-    <>
-      {/* <RegistrationScreen /> */}
-      <LoginScreen />
-    </>
-  );
+  return <NavigationContainer>{routing}</NavigationContainer>;
 }
+
+// <>
+//   <RegistrationScreen />
+//   {/* <LoginScreen /> */}
+// </>

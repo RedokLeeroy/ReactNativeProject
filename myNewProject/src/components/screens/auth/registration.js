@@ -12,9 +12,9 @@ import {
   Image,
 } from "react-native";
 
-const image = require("../../assets/img/Photo_BG.jpg");
+const image = require("../../../../assets/img/Photo_BG.jpg");
 let stateObj;
-export default function RegistrationScreen() {
+export default function RegistrationScreen({ navigation }) {
   const [isReady, setIsReady] = useState(false);
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
@@ -63,7 +63,7 @@ export default function RegistrationScreen() {
                 <View style={styles.avatar}>
                   <Image
                     style={styles.avatarBtn}
-                    source={require("../../assets/img/add.png")}
+                    source={require("../../../../assets/img/add.png")}
                   />
                 </View>
               </View>
@@ -129,7 +129,10 @@ export default function RegistrationScreen() {
               )}
               <View style={styles.containerForInput}>
                 {!isKeyboardHere && (
-                  <Pressable style={styles.signBtn}>
+                  <Pressable
+                    style={styles.signBtn}
+                    onPress={() => navigation.navigate("Login")}
+                  >
                     <Text style={styles.signText}>Уже є аккаунт? Увійти</Text>
                   </Pressable>
                 )}

@@ -12,9 +12,9 @@ import {
   Image,
 } from "react-native";
 
-const image = require("../../assets/img/Photo_BG.jpg");
+const image = require("../../../../assets/img/Photo_BG.jpg");
 let stateObj;
-export default function LoginScreen() {
+export default function LoginScreen({ navigation }) {
   const [isReady, setIsReady] = useState(false);
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
@@ -104,7 +104,10 @@ export default function LoginScreen() {
               )}
               <View style={styles.containerForInput}>
                 {!isKeyboardHere && (
-                  <Pressable style={styles.loginBtn}>
+                  <Pressable
+                    style={styles.loginBtn}
+                    onPress={() => navigation.navigate("Register")}
+                  >
                     <Text style={styles.loginText}>
                       Немає акаунту? Зареєструватись
                     </Text>
