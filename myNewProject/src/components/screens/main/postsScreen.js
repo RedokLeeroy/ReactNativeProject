@@ -1,46 +1,77 @@
 import React from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
-import commentsScreen from "./commentsScreen";
-import mapScreen from "./mapScreen";
-import home from "./home";
+import homeScreen from "../nested/homeScreen";
+import commentsScreen from "../nested/commentsScreen";
+import mapScreen from "../nested/mapScreen";
+import IconButton from "../../IconButton";
 
-const HomePage = createStackNavigator();
-
-const postsScreen = () => {
+const NestedScreen = createStackNavigator();
+const postsScreen = ({ navigation }) => {
   return (
-    <HomePage.Navigator>
-      <HomePage.Screen
-        name="home"
-        component={home}
+    <NestedScreen.Navigator>
+      <NestedScreen.Screen
+        name="Home"
+        component={homeScreen}
         options={{
-          headerShown: false,
+          headerRight: () => (
+            <TouchableOpacity style={{ marginRight: 16 }}>
+              <IconButton type="log-out" />
+            </TouchableOpacity>
+          ),
+          title: "Публикации",
+          headerStyle: {
+            borderBottomWidth: 1,
+            borderBottomColor: "rgba(0, 0, 0, 0.3)",
+          },
+          headerTitleStyle: {
+            color: "#212121",
+            marginLeft: "50%",
+          },
         }}
       />
-      <HomePage.Screen
-        name="comment"
+      <NestedScreen.Screen
+        name="Comments"
         component={commentsScreen}
         options={{
-          headerShown: false,
+          headerLeft: () => (
+            <TouchableOpacity
+              style={{ marginLeft: 16, padding: 10 }}
+              onPress={() => navigation.navigate("Home")}
+            >
+              <IconButton type="arrow-left" />
+            </TouchableOpacity>
+          ),
+          title: "Коментарии",
+          headerStyle: {
+            backgroundColor: "#E5E5E5",
+            borderBottomWidth: 1,
+            borderBottomColor: "rgba(0, 0, 0, 0.3)",
+          },
+          headerTitleStyle: {
+            color: "#212121",
+            marginLeft: "35%",
+          },
         }}
       />
-      <HomePage.Screen
-        name="map"
+
+      <NestedScreen.Screen
+        name="Map"
         component={mapScreen}
         options={{
           headerShown: false,
         }}
       />
-    </HomePage.Navigator>
+    </NestedScreen.Navigator>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#E5E5E5",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#E5E5E5",
   },
 });
 

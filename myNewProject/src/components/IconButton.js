@@ -10,6 +10,7 @@ import {
   iconLogOut,
   userIcon,
   iconArrowLeft,
+  commentIcon,
 } from "./iconSvg/iconSvg";
 
 export default function IconButton({ type }) {
@@ -20,6 +21,7 @@ export default function IconButton({ type }) {
   const LogOutSvg = () => <SvgXml xml={iconLogOut} style={styles.icon} />;
   const ArrowLeftSvg = () => <SvgXml xml={iconArrowLeft} style={styles.icon} />;
   const ShapeSvg = () => <SvgXml xml={iconShape} style={styles.icon} />;
+  const Comment = () => <SvgXml xml={commentIcon} style={styles.icon} />;
 
   let svg;
   switch (type) {
@@ -46,6 +48,9 @@ export default function IconButton({ type }) {
       break;
     default:
       svg = "";
+    case "comment":
+      svg = <Comment />;
+      break;
   }
   return (
     <TouchableOpacity activeOpacity={0.8} style={styles.btn}>

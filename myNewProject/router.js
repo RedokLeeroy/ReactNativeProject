@@ -1,15 +1,14 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { StyleSheet, View, TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { AntDesign } from "@expo/vector-icons";
-import { Feather } from "@expo/vector-icons";
-import IconButton from "./src/components/IconButton";
 import LoginScreen from "./src/components/screens/auth/login";
 import RegistrationScreen from "./src/components/screens/auth/registration";
 import postsScreen from "./src/components/screens/main/postsScreen";
 import createPostsScreen from "./src/components/screens/main/createPostScreen";
 import profileScreen from "./src/components/screens/main/profileScreen";
+import { Ionicons } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
+import { StyleSheet, View, TouchableOpacity } from "react-native";
 
 const AuthStack = createStackNavigator();
 const MainTab = createBottomTabNavigator();
@@ -41,14 +40,12 @@ export const useRoute = (isAuth) => {
         tabBarShowLabel: false,
         tabBarStyle: [
           {
-            backgroundColor: "#E5E5E5",
             borderTopWidth: 1,
             borderTopColor: "rgba(0, 0, 0, 0.3)",
           },
           null,
         ],
         headerStyle: {
-          backgroundColor: "#E5E5E5",
           borderBottomWidth: 1,
           borderBottomColor: "rgba(0, 0, 0, 0.3)",
         },
@@ -62,13 +59,7 @@ export const useRoute = (isAuth) => {
         name="Posts"
         component={postsScreen}
         options={{
-          title: "Публікації",
-
-          headerRight: () => (
-            <TouchableOpacity style={{ marginRight: 16 }}>
-              <IconButton type="log-out" />
-            </TouchableOpacity>
-          ),
+          headerShown: false,
           tabBarIcon: ({ focused, size, color }) => (
             <View
               style={[focused ? styles.bottomButton : styles.bottomButton2]}
