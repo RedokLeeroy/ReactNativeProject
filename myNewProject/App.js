@@ -6,8 +6,11 @@ import {
 import AppLoading from "expo-app-loading";
 // import LoginScreen from "./src/components/screens/auth/login";
 // import RegistrationScreen from "./src/components/screens/auth/registration";
-import { NavigationContainer } from "@react-navigation/native";
-import { useRoute } from "./router";
+// import { NavigationContainer } from "@react-navigation/native";
+// import { useRoute } from "./router";
+import { Provider } from "react-redux";
+import { store } from "./src/redux/store";
+import Main from "./src/components/Main";
 
 export default function App() {
   let [fontsLoaded] = useFonts({
@@ -15,13 +18,15 @@ export default function App() {
     Roboto_500Medium,
   });
 
-  const routing = useRoute(true);
-
   if (!fontsLoaded) {
     return <AppLoading />;
   }
 
-  return <NavigationContainer>{routing}</NavigationContainer>;
+  return (
+    <Provider store={store}>
+      <Main />
+    </Provider>
+  );
 }
 
 // <>

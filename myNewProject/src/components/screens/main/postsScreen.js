@@ -1,13 +1,22 @@
 import React from "react";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableOpacity, Text } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import homeScreen from "../nested/homeScreen";
 import commentsScreen from "../nested/commentsScreen";
 import mapScreen from "../nested/mapScreen";
 import IconButton from "../../IconButton";
+import { authSignOutUser } from "../../../redux/auth/authOperations";
+import { useDispatch } from "react-redux";
 
 const NestedScreen = createStackNavigator();
 const postsScreen = ({ navigation }) => {
+  const dispatch = useDispatch();
+
+  const handleSignOut = () => {
+    console.log("YOMAMA");
+    dispatch(authSignOutUser());
+  };
+
   return (
     <NestedScreen.Navigator>
       <NestedScreen.Screen
@@ -15,8 +24,11 @@ const postsScreen = ({ navigation }) => {
         component={homeScreen}
         options={{
           headerRight: () => (
-            <TouchableOpacity style={{ marginRight: 16 }}>
-              <IconButton type="log-out" />
+            <TouchableOpacity
+              style={{ marginRight: 15 }}
+              onPress={handleSignOut}
+            >
+              <Text style={{ fontSize: 25 }}>&#8592;</Text>
             </TouchableOpacity>
           ),
           title: "Публикации",

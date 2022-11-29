@@ -11,20 +11,24 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
+import { useDispatch } from "react-redux";
+import { authSignInUser } from "../../../redux/auth/authOperations";
 
 const image = require("../../../../assets/img/Photo_BG.jpg");
+
+const initialState = {
+  email: "",
+  password: "",
+};
+
 let stateObj;
 export default function LoginScreen({ navigation }) {
-  const [isReady, setIsReady] = useState(false);
-  const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
+  const [state, setstate] = useState(initialState);
   const [isFocusedPass, setFocusPass] = useState(false);
   const [isFocusedEmail, setFocusEmail] = useState(false);
   const [isKeyboardHere, setIsKeyboardHere] = useState(false);
   const [showPassword, setShowPassword] = useState(true);
-
-  const passwordHandler = (text) => setPassword(text);
-  const emailHandler = (text) => setEmail(text);
+  const dispatch = useDispatch();
 
   const KeyboardHide = () => {
     Keyboard.dismiss();
@@ -33,9 +37,14 @@ export default function LoginScreen({ navigation }) {
 
   const keyboardSubmit = () => {
     console.log((stateObj = { password, email }));
-    setPassword("");
-    setEmail("");
+    dispatch(authSignInUser(state));
+    setstate(initialState);
     KeyboardHide();
+    setShowPassword(false);
+  };
+
+  const handleSubmit = () => {
+    dispatch(authSignInUser(state));
     setShowPassword(false);
   };
   return (
@@ -59,8 +68,10 @@ export default function LoginScreen({ navigation }) {
                 <Text style={styles.text}>Вхід</Text>
               </View>
               <TextInput
-                value={email}
-                onChangeText={emailHandler}
+                value={state.email}
+                onChangeText={(value) =>
+                  setstate((prevState) => ({ ...prevState, email: value }))
+                }
                 placeholder="email"
                 style={isFocusedEmail ? styles.inputFocused : styles.input}
                 onFocus={() => {
@@ -73,8 +84,10 @@ export default function LoginScreen({ navigation }) {
               />
               <View style={styles.passwordInput}>
                 <TextInput
-                  value={password}
-                  onChangeText={passwordHandler}
+                  value={state.password}
+                  onChangeText={(value) =>
+                    setstate((prevState) => ({ ...prevState, password: value }))
+                  }
                   placeholder="Password"
                   secureTextEntry={showPassword}
                   style={isFocusedPass ? styles.inputFocused : styles.input}
@@ -86,7 +99,7 @@ export default function LoginScreen({ navigation }) {
                     setFocusPass(false);
                   }}
                 />
-                {password && (
+                {state.password && (
                   <Text
                     style={styles.passwordBtn}
                     onPress={() => {
@@ -98,7 +111,11 @@ export default function LoginScreen({ navigation }) {
                 )}
               </View>
               {!isKeyboardHere && (
-                <TouchableOpacity activeOpacity={0.8} style={styles.LogBTN}>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  style={styles.LogBTN}
+                  onPress={handleSubmit}
+                >
                   <Text style={styles.LogText}>Вхід</Text>
                 </TouchableOpacity>
               )}

@@ -12,22 +12,25 @@ import {
   Image,
 } from "react-native";
 
+import { useDispatch } from "react-redux";
+import { authSignUpUser } from "../../../redux/auth/authOperations";
+
+const initialState = {
+  name: "",
+  email: "",
+  password: "",
+};
+
 const image = require("../../../../assets/img/Photo_BG.jpg");
 let stateObj;
 export default function RegistrationScreen({ navigation }) {
-  const [isReady, setIsReady] = useState(false);
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
   const [isFocusedUser, setFocusUser] = useState(false);
   const [isFocusedPass, setFocusPass] = useState(false);
   const [isFocusedEmail, setFocusEmail] = useState(false);
   const [isKeyboardHere, setIsKeyboardHere] = useState(false);
   const [showPassword, setShowPassword] = useState(true);
-
-  const nameHandler = (text) => setName(text);
-  const passwordHandler = (text) => setPassword(text);
-  const emailHandler = (text) => setEmail(text);
+  const [state, setState] = useState(initialState);
+  const dispatch = useDispatch();
 
   const KeyboardHide = () => {
     Keyboard.dismiss();
@@ -36,12 +39,17 @@ export default function RegistrationScreen({ navigation }) {
 
   const keyboardSubmit = () => {
     console.log((stateObj = { password, email, name }));
-    setPassword("");
-    setEmail("");
-    setName("");
+    dispatch(authSignUpUser(state));
+    setState(initialState);
     KeyboardHide();
     setShowPassword(false);
   };
+
+  const handleSubmit = () => {
+    dispatch(authSignUpUser(state));
+    setShowPassword(false);
+  };
+
   return (
     <TouchableWithoutFeedback onPress={KeyboardHide}>
       <ImageBackground
@@ -71,8 +79,10 @@ export default function RegistrationScreen({ navigation }) {
                 <Text style={styles.text}>Реєстрація</Text>
               </View>
               <TextInput
-                value={name}
-                onChangeText={nameHandler}
+                value={state.name}
+                onChangeText={(value) =>
+                  setState((prevState) => ({ ...prevState, name: value }))
+                }
                 placeholder="Username"
                 style={isFocusedUser ? styles.inputFocused : styles.input}
                 onFocus={() => {
@@ -85,8 +95,10 @@ export default function RegistrationScreen({ navigation }) {
               />
               <View style={styles.passwordInput}>
                 <TextInput
-                  value={password}
-                  onChangeText={passwordHandler}
+                  value={state.password}
+                  onChangeText={(value) =>
+                    setState((prevState) => ({ ...prevState, password: value }))
+                  }
                   placeholder="Password"
                   secureTextEntry={showPassword}
                   style={isFocusedPass ? styles.inputFocused : styles.input}
@@ -98,7 +110,7 @@ export default function RegistrationScreen({ navigation }) {
                     setFocusPass(false);
                   }}
                 />
-                {password && (
+                {state.password && (
                   <Text
                     style={styles.passwordBtn}
                     onPress={() => {
@@ -110,8 +122,10 @@ export default function RegistrationScreen({ navigation }) {
                 )}
               </View>
               <TextInput
-                value={email}
-                onChangeText={emailHandler}
+                value={state.email}
+                onChangeText={(value) =>
+                  setState((prevState) => ({ ...prevState, email: value }))
+                }
                 placeholder="email"
                 style={isFocusedEmail ? styles.inputFocused : styles.input}
                 onFocus={() => {
@@ -123,7 +137,11 @@ export default function RegistrationScreen({ navigation }) {
                 }}
               />
               {!isKeyboardHere && (
-                <TouchableOpacity activeOpacity={0.8} style={styles.regBTN}>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  style={styles.regBTN}
+                  onPress={handleSubmit}
+                >
                   <Text style={styles.regText}>Зареєструватись</Text>
                 </TouchableOpacity>
               )}
