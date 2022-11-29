@@ -13,7 +13,6 @@ const postsScreen = ({ navigation }) => {
   const dispatch = useDispatch();
 
   const handleSignOut = () => {
-    console.log("YOMAMA");
     dispatch(authSignOutUser());
   };
 

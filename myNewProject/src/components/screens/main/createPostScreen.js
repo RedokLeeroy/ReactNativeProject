@@ -9,11 +9,14 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
 } from "react-native";
+import db from "../../../firebase/config";
+import { useSelector } from "react-redux";
 import { Camera } from "expo-camera";
 import * as Location from "expo-location";
 import IconButton from "../../IconButton";
+
 const createPostsScreen = ({ navigation }) => {
-  const [inputIsFocus, setInputIsFocus] = useState("");
+  // const [inputIsFocus, setInputIsFocus] = useState("");
   const [camera, setCamera] = useState(null);
   const [photo, setPhoto] = useState(null);
   const [name, setName] = useState("");
@@ -21,6 +24,9 @@ const createPostsScreen = ({ navigation }) => {
   const [locationName, setLocationName] = useState("");
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [borderInput, setBorderInput] = useState(null);
+  const { userId, nickName } = useSelector((state) => state.auth);
+  const [cameraPermission, requestCameraPermission] =
+    Camera.useCameraPermissions();
 
   const keyboardHide = () => {
     setIsShowKeyboard(false);
@@ -30,6 +36,10 @@ const createPostsScreen = ({ navigation }) => {
 
   useEffect(() => {
     (async () => {
+      cameraPermission.granted;
+      if (!cameraPermission.granted) {
+        await requestCameraPermission();
+      }
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         console.log("Permission to access location was denied");
@@ -50,10 +60,44 @@ const createPostsScreen = ({ navigation }) => {
   };
 
   const sendPhoto = () => {
-    navigation.navigate("Home", { photo, name, location, locationName });
+    // navigation.navigate("Home", { photo, name, location, locationName });
+    uploadPostToServer();
+    navigation.navigate("Home");
     setName("");
     setLocationName("");
   };
+
+  const uploadPostToServer = async () => {
+    const photo = await uploadPhotoToServer();
+
+    const createPost = await db.firestore().collection("posts").add({
+      photo,
+      location,
+      userId,
+      nickName,
+      locationName,
+      name,
+    });
+  };
+
+  const uploadPhotoToServer = async () => {
+    try {
+      const response = await fetch(photo);
+      const file = await response.blob();
+      const postId = Date.now().toString();
+      await db.storage().ref(`postImage/${postId}`).put(file);
+      const processedPhoto = await db
+        .storage()
+        .ref("postImage")
+        .child(postId)
+        .getDownloadURL();
+      return processedPhoto;
+    } catch (error) {
+      console.log("error.message", error.message);
+      console.log("error.code", error.code);
+    }
+  };
+
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <View

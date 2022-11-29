@@ -14,15 +14,19 @@ import {
 
 import { useDispatch } from "react-redux";
 import { authSignUpUser } from "../../../redux/auth/authOperations";
+import db from "../../../firebase/config";
+import { nanoid } from "@reduxjs/toolkit";
+const add = require("../../../../assets/img/add.png");
+const remove = require("../../../../assets/img/remove.png");
+import * as ImagePicker from "expo-image-picker";
 
 const initialState = {
-  name: "",
+  login: "",
   email: "",
   password: "",
 };
-
 const image = require("../../../../assets/img/Photo_BG.jpg");
-let stateObj;
+
 export default function RegistrationScreen({ navigation }) {
   const [isFocusedUser, setFocusUser] = useState(false);
   const [isFocusedPass, setFocusPass] = useState(false);
@@ -30,6 +34,7 @@ export default function RegistrationScreen({ navigation }) {
   const [isKeyboardHere, setIsKeyboardHere] = useState(false);
   const [showPassword, setShowPassword] = useState(true);
   const [state, setState] = useState(initialState);
+  const [avatar, setAvatar] = useState();
   const dispatch = useDispatch();
 
   const KeyboardHide = () => {
@@ -37,17 +42,62 @@ export default function RegistrationScreen({ navigation }) {
     setIsKeyboardHere(false);
   };
 
-  const keyboardSubmit = () => {
-    console.log((stateObj = { password, email, name }));
-    dispatch(authSignUpUser(state));
+  const keyboardSubmit = async () => {
+    const avatarImg = await uploadAvatarToServer();
+    dispatch(authSignUpUser(state, avatarImg));
     setState(initialState);
     KeyboardHide();
     setShowPassword(false);
   };
 
-  const handleSubmit = () => {
-    dispatch(authSignUpUser(state));
+  const handleSubmit = async () => {
+    const avatarImg = await uploadAvatarToServer();
+    dispatch(authSignUpUser(state, avatarImg));
+    setState(initialState);
     setShowPassword(false);
+  };
+
+  const uploadAvatarToServer = async () => {
+    try {
+      console.log("avatar", avatar);
+      if (avatar) {
+        const avatarURL = avatar;
+        const response = await fetch(avatarURL);
+        const file = await response.blob();
+        console.log("file", file);
+        const avatarId = nanoid();
+        await db.storage().ref(`avatarImage/${avatarId}`).put(file);
+        const processedAvatar = await db
+          .storage()
+          .ref("avatarImage")
+          .child(avatarId)
+          .getDownloadURL();
+        return processedAvatar;
+      } else {
+        const processedAvatar = await db
+          .storage()
+          .ref("avatarImage")
+          .child("avatar-default-icon.png")
+          .getDownloadURL();
+        return processedAvatar;
+      }
+    } catch (error) {
+      console.log("error.message", error.message);
+      console.log("error.code", error.code);
+    }
+  };
+
+  const addAvatar = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: false,
+      allowsMultipleSelection: false,
+    });
+    console.log("result", result);
+
+    if (!result.canceled) {
+      setAvatar(result.assets[0].uri);
+    }
   };
 
   return (
@@ -69,19 +119,35 @@ export default function RegistrationScreen({ navigation }) {
             >
               <View style={styles.avatarWrapper}>
                 <View style={styles.avatar}>
-                  <Image
-                    style={styles.avatarBtn}
-                    source={require("../../../../assets/img/add.png")}
-                  />
+                  {avatar && (
+                    <Image source={{ uri: avatar }} style={styles.avatarImg} />
+                  )}
+                  {!avatar ? (
+                    <TouchableOpacity
+                      onPress={addAvatar}
+                      style={styles.avatarBtn}
+                    >
+                      <Image source={add} />
+                    </TouchableOpacity>
+                  ) : (
+                    <TouchableOpacity
+                      onPress={() => {
+                        setAvatar(null);
+                      }}
+                      style={styles.avatarBtn}
+                    >
+                      <Image source={remove} />
+                    </TouchableOpacity>
+                  )}
                 </View>
               </View>
               <View style={styles.containerForInput}>
                 <Text style={styles.text}>Реєстрація</Text>
               </View>
               <TextInput
-                value={state.name}
+                value={state.login}
                 onChangeText={(value) =>
-                  setState((prevState) => ({ ...prevState, name: value }))
+                  setState((prevState) => ({ ...prevState, login: value }))
                 }
                 placeholder="Username"
                 style={isFocusedUser ? styles.inputFocused : styles.input}
@@ -255,4 +321,25 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   avatarBtn: { position: "absolute", bottom: 15, right: -12.5 },
+  avatar: {
+    position: "relative",
+    marginTop: -60,
+    width: 120,
+    height: 120,
+    backgroundColor: "#F6F6F6",
+    borderRadius: 16,
+  },
+  avatarImg: {
+    position: "absolute",
+    top: 0,
+    // backgroundColor: "#F6F6F6",
+    borderRadius: 16,
+    width: 120,
+    height: 120,
+  },
+  avatarBtn: {
+    position: "absolute",
+    bottom: 15,
+    right: -12.5,
+  },
 });

@@ -9,16 +9,41 @@ import {
   TouchableOpacity,
 } from "react-native";
 import IconButton from "../../IconButton";
+import db from "../../../firebase/config";
 
 const homeScreen = ({ navigation, route }) => {
   const [posts, setPosts] = useState([]);
+  console.log("posts", posts);
+  const [allComments, setAllComments] = useState([]);
+  console.log("allComments", allComments);
+
+  const getAllPost = async () => {
+    await db
+      .firestore()
+      .collection("posts")
+      .onSnapshot((data) =>
+        setPosts(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
+      );
+  };
+
+  const getAllComments = async () => {
+    await db
+      .firestore()
+      .collection("comments")
+      .onSnapshot((data) =>
+        setAllComments(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
+      );
+  };
 
   useEffect(() => {
-    if (route.params) {
-      setPosts((prevState) => [...prevState, route.params]);
-    }
-  }, [route.params]);
-  console.log("posts", posts);
+    getAllPost();
+    getAllComments();
+  }, []);
+
+  // const findId = (id) => (allComments[id]?.length > 0 ? allComments[id].length : 0);
+  const findId = (id) =>
+    allComments.filter(({ postId }) => id === postId).length;
+
   return (
     <View style={styles.container}>
       <FlatList
@@ -32,10 +57,15 @@ const homeScreen = ({ navigation, route }) => {
               <View style={{ flexDirection: "row" }}>
                 <IconButton type="comment" />
                 <TouchableOpacity
-                  style={styles.comentsButton}
-                  onPress={() => navigation.navigate("Comments")}
+                  style={styles.btnComents}
+                  onPress={() =>
+                    navigation.navigate("Comments", {
+                      postId: item.id,
+                      photo: item.photo,
+                    })
+                  }
                 >
-                  <Text style={styles.text}>0</Text>
+                  <Text style={styles.text}>{findId(item.id)}</Text>
                 </TouchableOpacity>
               </View>
               <View style={{ flexDirection: "row" }}>
